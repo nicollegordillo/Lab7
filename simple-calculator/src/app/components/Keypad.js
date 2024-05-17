@@ -8,7 +8,7 @@ const Keypad = ({ onButtonClick }) => {
     '4', '5', '6', '*',
     '1', '2', '3', '-',
     '0', '.', '=', '+',
-    'C', 'CE' // Agrega botones para borrar
+    'C', 'CE' 
   ];
 
   return (

@@ -7,7 +7,7 @@ import styles from './Calculator.module.css';
 const Calculator = () => {
   const [displayValue, setDisplayValue] = useState('0');
   const [operator, setOperator] = useState(null);
-  const [waitingForOperand, setWaitingForOperand] = useState(false);
+  const [waitingForOperand, setWaitingForOperand] = useState(false);  
   const [value, setValue] = useState(null);
 
   const handleButtonClick = (label) => {
@@ -55,7 +55,7 @@ const Calculator = () => {
     }
   };
   
-  useEffect(() => {
+   useEffect(() => {
   const handleKeyDown = (event) => {
     const { key } = event;
     if (/\d|[-+*/.=]/.test(key)) {
@@ -108,7 +108,7 @@ const Calculator = () => {
   return (
     <div className={styles.calculator}>
       <Display value={displayValue} />
-      <Keypad onButtonClick={handleButtonClick} />
+      <Keypad onButtonClick={handleButtonClick}  />
     </div>
   );
 };
