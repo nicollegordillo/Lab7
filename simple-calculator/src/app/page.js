@@ -35,6 +35,23 @@ const Calculator = () => {
       setValue(null);
       setOperator(null);
       setWaitingForOperand(false);
+    } else if (label === 'C') {
+      // Limpiar toda la pantalla
+      setDisplayValue('0');
+      setOperator(null);
+      setValue(null);
+      setWaitingForOperand(false);
+    } else if (label === 'CE') {
+      // Borrar un dígito a la vez
+      setDisplayValue(prevDisplayValue => {
+        if (prevDisplayValue.length > 1) {
+          // Si hay más de un dígito, borra el último
+          return prevDisplayValue.slice(0, -1);
+        } else {
+          // Si solo queda un dígito, establece la pantalla en '0'
+          return '0';
+        }
+      });
     }
   };
 
