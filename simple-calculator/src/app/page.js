@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Display from './components/Display';
 import Keypad from './components/Keypad';
 import styles from './Calculator.module.css';
@@ -54,6 +54,30 @@ const Calculator = () => {
       });
     }
   };
+  
+  useEffect(() => {
+  const handleKeyDown = (event) => {
+    const { key } = event;
+    if (/\d|[-+*/.=]/.test(key)) {
+      // Solo maneja los caracteres permitidos
+      handleButtonClick(key);
+    } else if (key === 'Backspace') {
+      // Si se presiona la tecla 'Backspace', borra un dígito
+      handleButtonClick('CE');
+    } else if (key === 'Delete') {
+      // Si se presiona la tecla 'Delete', borra toda la pantalla
+      handleButtonClick('C');
+    } else if (key === 'Enter') {
+      handleButtonClick('=');
+    }
+  };
+
+  window.addEventListener('keydown', handleKeyDown);
+
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown);
+  };
+}, [handleButtonClick]);
 
   const evaluate = (val1, val2, operator) => {
     const num1 = parseFloat(val1);
