@@ -1,95 +1,75 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import React, { useState } from 'react';
+import Display from './components/Display';
+import Keypad from './components/Keypad';
+import styles from './Calculator.module.css';
 
-export default function Home() {
+const Calculator = () => {
+  const [displayValue, setDisplayValue] = useState('0');
+  const [operator, setOperator] = useState(null);
+  const [waitingForOperand, setWaitingForOperand] = useState(false);
+  const [value, setValue] = useState(null);
+
+  const handleButtonClick = (label) => {
+    if (/\d/.test(label)) {
+      if (displayValue.length >= 9) return;
+      setDisplayValue(waitingForOperand ? label : displayValue === '0' ? label : displayValue + label);
+      setWaitingForOperand(false);
+    } else if (label === '.') {
+      if (displayValue.length >= 9 || displayValue.includes('.')) return;
+      setDisplayValue(displayValue + '.');
+    } else if (['+', '-', '*', '/'].includes(label)) {
+      if (value !== null && operator) {
+        const result = evaluate(value, parseFloat(displayValue), operator);
+        setDisplayValue(String(result).slice(0, 9));
+        setValue(result);
+      } else {
+        setValue(parseFloat(displayValue));
+      }
+      setOperator(label);
+      setWaitingForOperand(true);
+    } else if (label === '=') {
+      if (value === null || operator === null) return;
+      const result = evaluate(value, parseFloat(displayValue), operator);
+      setDisplayValue(String(result).slice(0, 9));
+      setValue(null);
+      setOperator(null);
+      setWaitingForOperand(false);
+    }
+  };
+
+  const evaluate = (val1, val2, operator) => {
+    const num1 = parseFloat(val1);
+    const num2 = parseFloat(val2);
+    let result;
+    switch (operator) {
+      case '+':
+        result = num1 + num2;
+        break;
+      case '-':
+        result = num1 - num2;
+        break;
+      case '*':
+        result = num1 * num2;
+        break;
+      case '/':
+        result = num1 / num2;
+        break;
+      default:
+        return val2;
+    }
+    if (result < 0 || result > 999999999) {
+      return 'ERROR';
+    }
+    return result;
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    <div className={styles.calculator}>
+      <Display value={displayValue} />
+      <Keypad onButtonClick={handleButtonClick} />
+    </div>
   );
-}
+};
+
+export default Calculator;
