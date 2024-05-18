@@ -9,6 +9,7 @@ const Calculator = () => {
   const [operator, setOperator] = useState(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);  
   const [value, setValue] = useState(null);
+  const [activeButton, setActiveButton] = useState(null)
 
   const handleButtonClick = (label) => {
     if (/\d/.test(label)) {
@@ -54,30 +55,41 @@ const Calculator = () => {
       });
     }
   };
-  
-   useEffect(() => {
-  const handleKeyDown = (event) => {
-    const { key } = event;
-    if (/\d|[-+*/.=]/.test(key)) {
-      // Solo maneja los caracteres permitidos
-      handleButtonClick(key);
-    } else if (key === 'Backspace') {
-      // Si se presiona la tecla 'Backspace', borra un dígito
-      handleButtonClick('CE');
-    } else if (key === 'Delete') {
-      // Si se presiona la tecla 'Delete', borra toda la pantalla
-      handleButtonClick('C');
-    } else if (key === 'Enter') {
-      handleButtonClick('=');
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const { key } = event;
+      if (/\d|[-+*/.=]/.test(key)) {
+        handleButtonClick(key);
+        setActiveButton(key);
+      } else if (key === 'Backspace') {
+        handleButtonClick('CE');
+        setActiveButton('CE');
+      } else if (key === 'Delete') {
+        handleButtonClick('C');
+        setActiveButton('C');
+      } else if (key === 'Enter') {
+        handleButtonClick('=');
+        setActiveButton('=');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleButtonClick]);
+
+  useEffect(() => {
+    if (activeButton) {
+      const timeout = setTimeout(() => {
+        setActiveButton(null);
+      }, 100); // 100ms, ajusta según sea necesario
+
+      return () => clearTimeout(timeout);
     }
-  };
-
-  window.addEventListener('keydown', handleKeyDown);
-
-  return () => {
-    window.removeEventListener('keydown', handleKeyDown);
-  };
-}, [handleButtonClick]);
+  }, [activeButton]);
 
   const evaluate = (val1, val2, operator) => {
     const num1 = parseFloat(val1);
@@ -108,7 +120,7 @@ const Calculator = () => {
   return (
     <div className={styles.calculator}>
       <Display value={displayValue} />
-      <Keypad onButtonClick={handleButtonClick}  />
+      <Keypad onButtonClick={handleButtonClick}  activeButton={activeButton} setActiveButton={setActiveButton}/>
     </div>
   );
 };

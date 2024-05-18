@@ -17,7 +17,13 @@
 
 .button:focus {
   outline: none;
+}
+
+.button:active {
   background-color: #c0c0c0;
 }
 
 
+.active {
+  background-color: #c0c0c0;
+}
